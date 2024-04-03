@@ -1,0 +1,36 @@
+name: test
+
+env:
+    repo: repository_url
+    AWS_REGION: us-west-1
+    DEPLOY: test
+    NS: test
+
+on:
+  push:
+    tags:
+        - 'v-*'
+    branches:
+        - develop
+        - main
+
+jobs:
+    check:
+        name: check
+        runs-on: ubuntu-latest
+        outputs:
+            TAG: ${{ steps.check-ref.outputs.TAG }}
+            LATEST: ${{ steps.check-ref.outputs.LATEST }}
+            ENV: ${{ steps.check-ref.outputs.ENVIRON }}
+            RUN_CI: ${{ steps.check-ref.outputs.RUN_CI }}
+            RUN_CD: ${{ steps.check-ref.outputs.RUN_CD }}
+        steps:
+          - name: Checkout
+            uses: actions/checkout@v4
+
+          - name: test git ref
+            id: check-ref
+            uses: ./ # it's me
+            with:
+                validPush: "branch-main/release/auto tag-v/production/manual"
+

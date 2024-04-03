@@ -1,0 +1,37 @@
+name: tag-latest-environ-autodeploy
+description: "test de imagen"
+author: 'RAcl'
+branding:
+  icon: 'box'
+  color: 'blue'
+inputs:
+  ref:
+    description: 'The branch or tag ref'
+    required: true
+    default: ${{ github.head_ref || github.ref }}
+  sha:
+    description: 'The sha commit ref'
+    required: true
+    default: ${{ github.sha }}
+  validPush:
+    description: 'The branch or tag from CI/CD, see the README file'
+    required: true
+    default: "branch-develop/develop/auto branch-staging/staging/auto tag-rc/release/auto tag-v/production/manual"
+outputs:
+  TAG:
+    description: 'Image Tag name'
+  LATEST:
+    description: 'Image Latest name'
+  ENVIRON:
+    description: 'Environment'
+  RUN_CI:
+    description: 'Continuous Integration, string ture/false'
+  RUN_CD:
+    description: 'Continuous Delivery, string ture/false'
+runs:
+  using: 'docker'
+  image: 'Dockerfile'
+  args:
+    - ${{ inputs.ref }}
+    - ${{ inputs.sha }}
+    - ${{ inputs.validPush }}
