@@ -44,9 +44,6 @@ jobs:
           - name: Checkout
             uses: actions/checkout@v4
 
-          - name: Contexto
-            run: echo "${{ toJson(github) }}"
-
           - name: test git ref
             id: check-ref
             uses: RAcl/tag-latest-environ-autodeploy@v1
