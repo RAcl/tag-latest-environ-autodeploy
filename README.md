@@ -57,10 +57,11 @@ jobs:
         runs-on: ubuntu-latest
         outputs:
             IMAGE: ${{ steps.build-image.outputs.IMAGE }}
+            RUN_CD: ${{ needs.check.outputs.RUN_CD }}
         steps:
           - name: Checkout
             uses: actions/checkout@v4
-          - name: build-image
+          - name: build and push image
             id: build-image
             env:
                 AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
@@ -74,8 +75,8 @@ jobs:
                 sh build.sh --build-arg="ENVIRON=${{needs.check.outputs.ENV}}"
 
     delivery:
-        if: ${{ needs.check.outputs.RUN_CD == 'true' }}
-        needs: [check, integration]
+        if: ${{  needs.integration.outputs.RUN_CD == 'true' }}
+        needs: [integration]
         name: delivery
         runs-on: ubuntu-latest
         steps:
