@@ -18,7 +18,7 @@ If a "**validPush**" is not provided, the default is assumed, whose value is: _"
 name: example
 
 env:
-    repo: repository_url
+    repo: repository_name
     AWS_REGION: us-west-1
     DEPLOY: test
     NS: test
@@ -60,36 +60,18 @@ jobs:
         steps:
           - name: Checkout
             uses: actions/checkout@v4
-      
-          - name: Configure AWS credentials
-            uses: aws-actions/configure-aws-credentials@v4
-            with:
-              aws-access-key-id: ${{ vars.AWS_KEY_ID }}
-              aws-secret-access-key: ${{ secrets.AWS_SECRET }}
-              aws-region: ${{ env.AWS_REGION }}
-      
-          - name: Login to Amazon ECR
-            id: login-ecr
-            uses: aws-actions/amazon-ecr-login@v2
-      
-          - name: Build and push image to Amazon ECR
+          - name: build-image
             id: build-image
             env:
-              ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
-              ECR_REPOSITORY: ${{ env.repo }}
-              TAG: ${{ needs.check.outputs.TAG }}
-              LATEST: ${{ needs.check.outputs.LATEST }}
-              ENVIRON: ${{ needs.check.outputs.ENV }}
+                AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+                AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+                AWS_DEFAULT_REGION: ${{ env.AWS_REGION }}
+                AWS_REPOSITORY: ${{ env.repo }}
+                LATEST: ${{ needs.check.outputs.LATEST }}
+                IMAGE_TAG: ${{ needs.check.outputs.TAG }}
             run: |
-              docker build -t $ECR_REPOSITORY \
-                --build-arg="ENVIRON=${ENVIRON}" \
-                .
-              docker tag $ECR_REPOSITORY:latest $ECR_REGISTRY/$ECR_REPOSITORY:$LATEST
-              docker tag $ECR_REPOSITORY:latest $ECR_REGISTRY/$ECR_REPOSITORY:$TAG
-              docker push $ECR_REGISTRY/$ECR_REPOSITORY:$LATEST
-              docker push $ECR_REGISTRY/$ECR_REPOSITORY:$TAG
-              echo "IMAGE=$ECR_REGISTRY/$ECR_REPOSITORY:$TAG" >> $GITHUB_OUTPUT
-              echo $ECR_REGISTRY/$ECR_REPOSITORY:$TAG
+                curl -fsSL https://raw.githubusercontent.com/RAcl/aws-ecr-create-image-and-push/main/entrypoint.sh -o build.sh
+                sh build.sh --build-arg="ENVIRON=${{needs.check.outputs.ENV}}"
 
     delivery:
         if: ${{ needs.check.outputs.RUN_CD == 'true' }}
