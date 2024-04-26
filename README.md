@@ -6,7 +6,7 @@ The parameter it can receive is "**validPush**", which is composed of tuples sep
 
 **name/environ/delivery**, where:
 
-**name**: is in the form type-id, where "type" can be "branch" or "tag", the id in the case of a branch is the name of the branch, in the case of a tag, the beginning of the tag, for example, tag-rc for tags rc-0.1.3, rc-1.0.0, among others; tag-v for tags v-0.0.1, v-1.0.1, etc.
+**name**: is in the form type:id, where "type" can be "branch" or "tag", the id in the case of a branch is the name of the branch, in the case of a tag, the beginning of the tag, for example, tag:rc for tags rc-0.1.3, rc-1.0.0, among others; tag:v for tags v-0.0.1, v-1.0.1, etc.
 - **environ**: is the environment that will be returned when the push matches the previous "name".
 - **delivery**: "auto" for RUN_CD true, "manual" for RUN_CD false.
 
@@ -49,9 +49,9 @@ jobs:
 
           - name: test git ref
             id: check-ref
-            uses: RAcl/tag-latest-environ-autodeploy@v1
+            uses: RAcl/tag-latest-environ-autodeploy@v2
             with:
-                validPush: "branch-staging/staging/auto tag-v/production/manual"
+                validPush: "branch:staging/staging/auto tag:v/production/manual"
 
     integration:
         if: ${{ needs.check.outputs.RUN_CI == 'true' }}

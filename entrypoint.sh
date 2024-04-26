@@ -55,8 +55,8 @@ main () {
         BRANCH='true'
     fi
     for elem in $validPush; do
-        KIND=$(echo "${elem}" | awk -F'/' '{print $1}' | awk -F'-' '{print $1}')
-        NAME=$(echo "${elem}" | awk -F'/' '{print $1}' | awk -F'-' '{print $2}')
+        KIND=$(echo "${elem}" | awk -F'/' '{print $1}' | awk -F':' '{print $1}')
+        NAME=$(echo "${elem}" | awk -F'/' '{print $1}' | awk -F':' '{print $2}')
         ENVR=$(echo "${elem}" | awk -F'/' '{print $2}')
         CD=$(echo "${elem}" | awk -F'/' '{print $3}')
         if [ "$KIND" = "branch" ]; then
@@ -71,7 +71,7 @@ main () {
             ThisTag=$(echo ${TAG_NAME} | egrep ^"${NAME}-[0-9]+\.[0-9]+\.[0-9]+")
             if [ "$BRANCH" = 'false' ] && [ -n "${ThisTag}" ]; then
             [ "$CD" = "auto" ]&&CD="true"||CD="false"
-            [ "$ENVR" = "production" ]&&LATEST='latest'||LATEST="latest-${NAME}"
+            [ "$ENVR" = "production" ]&&LATEST='latest'||LATEST="latest-${ENVR}"
             response "true" "${CD}" "${TAG_NAME}" "${LATEST}" "${ENVR}"
             exit 0
             fi
