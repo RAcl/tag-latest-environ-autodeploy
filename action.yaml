@@ -16,7 +16,7 @@ inputs:
   validPush:
     description: 'The branch or tag from CI/CD, see the README file'
     required: true
-    default: "branch-develop/develop/auto branch-staging/staging/auto tag-rc/release/auto tag-v/production/manual"
+    default: "branch:develop/develop/auto branch:staging/staging/auto tag:rc/release/auto tag:v/production/manual"
 outputs:
   TAG:
     description: 'Image Tag name'
